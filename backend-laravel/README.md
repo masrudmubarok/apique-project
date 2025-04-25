@@ -67,7 +67,7 @@ Default URL: [http://localhost:8000](http://localhost:8000)
 
 Retrieves a list of tasks with optional filtering.
 
-#### Query Parameters:
+#### Query Parameters (optional) :
 - `title` (string): Filter tasks by title (partial matching supported)
 - `status` (string): Filter by status (e.g., `Pending`, `Done`)
 - `sort_by` (string): Field to sort by (`id`, `title`, `status`, etc.)
