@@ -1,17 +1,18 @@
 # Task Flow API Project
 
 ## Project Summary
-
 This project implements a RESTful API for managing tasks.
 
 ### Key Features:
 - **RESTful API**: Standard CRUD endpoints for tasks.
 - **Filtering**: Flexible filtering when retrieving tasks.
 
+---
+
 ## Setup
 
 ### Requirements
-- PHP >= 8.1 (Minimum recommended version)
+- PHP >= 8.1 *(Minimum recommended)*
 - Composer 2.7.1
 - MySQL >= 8.0
 
@@ -31,152 +32,188 @@ composer install
 cp .env.example .env
 ```
 
-### Configure .env
-Adjust database configurations in the `.env` file:
-- `DB_HOST`: The database host (e.g., localhost).
-- `DB_DATABASE`: The name of the database (e.g., task_flow_db).
-- `DB_USERNAME`: The database username.
-- `DB_PASSWORD`: The database password.
+### Configure `.env`
+Adjust database configurations:
+- `DB_HOST`: The database host (e.g., `localhost`)
+- `DB_DATABASE`: The name of your DB (e.g., `apique-project`)
+- `DB_USERNAME`: Your DB username
+- `DB_PASSWORD`: Your DB password
 
-Customize other configurations as needed, such as the application URL (`APP_URL`) and debugging settings (`APP_DEBUG`).
-
-### Generate Application Key
-```bash
-php artisan key:generate
-```
+You may also configure:
+- `APP_URL`
+- `APP_DEBUG`
 
 ### Run Database Migrations and Seeders
 ```bash
 php artisan migrate:fresh --seed
 ```
-This command will:
-- Drop all existing tables in the database.
-- Run all database migrations.
-- Execute defined database seeders to populate initial data.
+This will:
+- Drop all existing tables
+- Run all migrations
+- Seed the DB with initial data
 
 ### Start the Development Server
 ```bash
 php artisan serve
 ```
-The application will be accessible at [http://localhost:8000](http://localhost:8000) by default.
+Default URL: [http://localhost:8000](http://localhost:8000)
+
+---
 
 ## API Documentation
 
-### Tasks
-
-#### List Tasks
+### 📋 List Tasks
 **GET** `/api/tasks`
 
 Retrieves a list of tasks with optional filtering.
 
-**Query Parameters**:
-- `title` (string): Filter tasks by title (e.g., `/api/tasks?title=My Task`).
-- `status` (string): Filter tasks by status (e.g., `pending`, `completed`).
-- `sort_by` (string): Sort by field (`id`, `title`, `status`, `created_at`, `updated_at`).
-- `sort_order` (string): Sort order (`asc` or `desc`).
-- `page` (integer): Pagination page number.
-- `per_page` (integer): Results per page (default is 15).
+#### Query Parameters:
+- `title` (string): Filter tasks by title (partial matching supported)
+- `status` (string): Filter by status (e.g., `Pending`, `Done`)
+- `sort_by` (string): Field to sort by (`id`, `title`, `status`, etc.)
+- `sort_order` (string): `asc` or `desc`, default `asc`
+- `page` (int): Page number (pagination)
+- `per_page` (int): Items per page (default: 15)
 
-**Response**:
-```json
-[
-    {
-        "id": 1,
-        "title": "Task 1",
-        "status": "pending",
-        "created_at": "2024-07-24T10:00:00.000000Z",
-        "updated_at": "2024-07-24T12:30:00.000000Z"
-    },
-    {
-        "id": 2,
-        "title": "Task 2",
-        "status": "completed",
-        "created_at": "2024-07-24T11:00:00.000000Z",
-        "updated_at": "2024-07-24T13:45:00.000000Z"
-    }
-]
-```
-
-#### Task Detail
-**GET** `/api/tasks/{id}`
-
-Retrieves a single task by its ID.
-
-**Response**:
+#### Response:
 ```json
 {
-    "id": 1,
-    "title": "Task 1",
-    "status": "pending",
-    "created_at": "2024-07-24T10:00:00.000000Z",
-    "updated_at": "2024-07-24T12:30:00.000000Z"
+    "success": true,
+    "message": "Tasks retrieved successfully",
+    "data": [
+        {
+            "id": 1,
+            "title": "Learn Laravel",
+            "status": "Done",
+            "created_at": "2025-04-25T12:56:14.000000Z",
+            "updated_at": "2025-04-25T12:56:14.000000Z"
+        },
+        {
+            "id": 2,
+            "title": "Create Backend API",
+            "status": "Pending",
+            "created_at": "2025-04-25T12:56:14.000000Z",
+            "updated_at": "2025-04-25T12:56:14.000000Z"
+        }
+    ]
 }
 ```
 
-Returns 404 if task is not found.
+---
 
-#### Create Task
+### 📄 Task Detail
+**GET** `/api/tasks/{id}`
+
+Retrieve a task by ID.
+
+#### Path Parameter:
+- `id` (int): Task ID
+
+#### Response:
+```json
+{
+    "success": true,
+    "message": "Task retrieved successfully",
+    "data": {
+        "id": 1,
+        "title": "Learn Laravel",
+        "status": "Done",
+        "created_at": "2025-04-25T12:56:14.000000Z",
+        "updated_at": "2025-04-25T12:56:14.000000Z"
+    }
+}
+```
+If task is not found, return `404 Not Found`.
+
+---
+
+### ➕ Create Task
 **POST** `/api/tasks`
 
-**Request Body**:
+Create a new task.
+
+#### Request Body:
 ```json
 {
     "title": "Task name"
 }
 ```
 
-Returns the created task with status 201.
+#### Parameters:
+- `title` (string, required)
 
-**Response**:
+#### Response:
 ```json
 {
-    "id": 3,
-    "title": "Task name",
-    "status": "pending",
-    "created_at": "2024-07-24T14:00:00.000000Z",
-    "updated_at": "2024-07-24T14:00:00.000000Z"
+    "success": true,
+    "message": "Task created successfully",
+    "data": {
+        "id": 3,
+        "title": "Task name",
+        "status": "Pending",
+        "created_at": "2025-04-25T14:00:00.000000Z",
+        "updated_at": "2025-04-25T14:00:00.000000Z"
+    }
 }
 ```
+Missing/invalid title returns `422 Unprocessable Entity`.
 
-Returns 422 if title is missing or invalid.
+---
 
-#### Update Task
-**PUT/PATCH** `/api/tasks/{id}`
+### 📝 Update Task
+**PUT** `/api/tasks/{id}`
 
-**Request Body**:
+Update an existing task (PUT for full update, PATCH also supported).
+
+#### Path Parameter:
+- `id` (int): Task ID
+
+#### Request Body:
 ```json
 {
     "title": "New task name",
-    "status": "completed"
+    "status": "Done"
 }
 ```
 
-**Response**:
+#### Response:
 ```json
 {
-    "id": 1,
-    "title": "New task name",
-    "status": "completed",
-    "created_at": "2024-07-24T10:00:00.000000Z",
-    "updated_at": "2024-07-24T14:15:00.000000Z"
+    "success": true,
+    "message": "Task updated successfully",
+    "data": {
+        "id": 1,
+        "title": "New task name",
+        "status": "Done",
+        "created_at": "2024-07-24T10:00:00.000000Z",
+        "updated_at": "2024-07-24T14:15:00.000000Z"
+    }
 }
 ```
+Invalid input returns `422`, missing task returns `404`.
 
-Returns 404 if task not found. Returns 422 for invalid data.
+---
 
-#### Delete Task
+### ❌ Delete Task
 **DELETE** `/api/tasks/{id}`
 
-**Response**:
+Deletes a task.
+
+#### Path Parameter:
+- `id` (int): Task ID
+
+#### Response:
 ```json
 {
+    "success": true,
     "message": "Task deleted successfully"
 }
 ```
+Task not found returns `404 Not Found`.
 
-Returns 404 if task not found.
+---
 
 ## Notes
-- Ensure Laravel server is running when testing the API.
-- Adjust `.env` as needed for your environment.
-- Documentation may be updated to reflect future API changes.
+- Ensure Laravel server is running during API usage.
+- Adjust `.env` settings as needed.
+- This doc may be updated as the API evolves.
