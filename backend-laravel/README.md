@@ -1,61 +1,182 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Task Flow API Project
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Project Summary
 
-## About Laravel
+This project implements a RESTful API for managing tasks.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Key Features:
+- **RESTful API**: Standard CRUD endpoints for tasks.
+- **Filtering**: Flexible filtering when retrieving tasks.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Setup
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Requirements
+- PHP >= 8.1 (Minimum recommended version)
+- Composer 2.7.1
+- MySQL >= 8.0
 
-## Learning Laravel
+### Clone the Project
+```bash
+git clone https://github.com/masrudmubarok/apique-project.git
+cd apique-project/backend-laravel
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Install Composer Dependencies
+```bash
+composer install
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Copy the .env File
+```bash
+cp .env.example .env
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Configure .env
+Adjust database configurations in the `.env` file:
+- `DB_HOST`: The database host (e.g., localhost).
+- `DB_DATABASE`: The name of the database (e.g., task_flow_db).
+- `DB_USERNAME`: The database username.
+- `DB_PASSWORD`: The database password.
 
-## Laravel Sponsors
+Customize other configurations as needed, such as the application URL (`APP_URL`) and debugging settings (`APP_DEBUG`).
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Generate Application Key
+```bash
+php artisan key:generate
+```
 
-### Premium Partners
+### Run Database Migrations and Seeders
+```bash
+php artisan migrate:fresh --seed
+```
+This command will:
+- Drop all existing tables in the database.
+- Run all database migrations.
+- Execute defined database seeders to populate initial data.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development/)**
-- **[Active Logic](https://activelogic.com)**
+### Start the Development Server
+```bash
+php artisan serve
+```
+The application will be accessible at [http://localhost:8000](http://localhost:8000) by default.
 
-## Contributing
+## API Documentation
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Tasks
 
-## Code of Conduct
+#### List Tasks
+**GET** `/api/tasks`
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Retrieves a list of tasks with optional filtering.
 
-## Security Vulnerabilities
+**Query Parameters**:
+- `title` (string): Filter tasks by title (e.g., `/api/tasks?title=My Task`).
+- `status` (string): Filter tasks by status (e.g., `pending`, `completed`).
+- `sort_by` (string): Sort by field (`id`, `title`, `status`, `created_at`, `updated_at`).
+- `sort_order` (string): Sort order (`asc` or `desc`).
+- `page` (integer): Pagination page number.
+- `per_page` (integer): Results per page (default is 15).
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**Response**:
+```json
+[
+    {
+        "id": 1,
+        "title": "Task 1",
+        "status": "pending",
+        "created_at": "2024-07-24T10:00:00.000000Z",
+        "updated_at": "2024-07-24T12:30:00.000000Z"
+    },
+    {
+        "id": 2,
+        "title": "Task 2",
+        "status": "completed",
+        "created_at": "2024-07-24T11:00:00.000000Z",
+        "updated_at": "2024-07-24T13:45:00.000000Z"
+    }
+]
+```
 
-## License
+#### Task Detail
+**GET** `/api/tasks/{id}`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Retrieves a single task by its ID.
+
+**Response**:
+```json
+{
+    "id": 1,
+    "title": "Task 1",
+    "status": "pending",
+    "created_at": "2024-07-24T10:00:00.000000Z",
+    "updated_at": "2024-07-24T12:30:00.000000Z"
+}
+```
+
+Returns 404 if task is not found.
+
+#### Create Task
+**POST** `/api/tasks`
+
+**Request Body**:
+```json
+{
+    "title": "Task name"
+}
+```
+
+Returns the created task with status 201.
+
+**Response**:
+```json
+{
+    "id": 3,
+    "title": "Task name",
+    "status": "pending",
+    "created_at": "2024-07-24T14:00:00.000000Z",
+    "updated_at": "2024-07-24T14:00:00.000000Z"
+}
+```
+
+Returns 422 if title is missing or invalid.
+
+#### Update Task
+**PUT/PATCH** `/api/tasks/{id}`
+
+**Request Body**:
+```json
+{
+    "title": "New task name",
+    "status": "completed"
+}
+```
+
+**Response**:
+```json
+{
+    "id": 1,
+    "title": "New task name",
+    "status": "completed",
+    "created_at": "2024-07-24T10:00:00.000000Z",
+    "updated_at": "2024-07-24T14:15:00.000000Z"
+}
+```
+
+Returns 404 if task not found. Returns 422 for invalid data.
+
+#### Delete Task
+**DELETE** `/api/tasks/{id}`
+
+**Response**:
+```json
+{
+    "message": "Task deleted successfully"
+}
+```
+
+Returns 404 if task not found.
+
+## Notes
+- Ensure Laravel server is running when testing the API.
+- Adjust `.env` as needed for your environment.
+- Documentation may be updated to reflect future API changes.
