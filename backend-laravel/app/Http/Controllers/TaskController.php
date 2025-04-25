@@ -49,7 +49,7 @@ class TaskController extends Controller
         try {
             $task = Task::create([
                 'title' => $request->input('title'),
-                'status' => $request->input('status', TaskStatus::PENDING)->value,
+                'status' => $request->input('status'),
             ]);
 
             return response()->json(['success' => true, 'message' => 'Task created successfully', 'data' => new TaskResource($task)], 201);
@@ -67,7 +67,10 @@ class TaskController extends Controller
                 return response()->json(['success' => false, 'message' => 'Data not found', 'data' => null], 404);
             }
 
-            $task->update(['title' => $request->input('title'), 'status' => $request->input('status')->value]);
+            $task->update([
+                'title' => $request->input('title'), 
+                'status' => $request->input('status'),
+            ]);
 
             return response()->json(['success' => true,'message' => 'Task updated successfully','data' => new TaskResource($task)], 200);
         } catch (Exception $e) {
