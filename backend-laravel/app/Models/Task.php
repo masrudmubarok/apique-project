@@ -22,6 +22,10 @@ class Task extends Model
             if ($filterName === 'title') {
                 $query->where('title', 'like', '%' . $filterValue . '%');
             }
+
+            if ($filterName === 'status') {
+                $query->where('status', $filterValue);
+            }
         }
 
         return $query;

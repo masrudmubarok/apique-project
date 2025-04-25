@@ -16,8 +16,9 @@ class TaskController extends Controller
     public function getAllTasks(Request $request): JsonResponse
     {
         try {
-            $filters = $request->query('filters', []);
-            $tasks = Task::when(!empty($filters), fn($q) => $q->filter($filters), fn($q) => $q)->get();
+            $filters = $request->only(['title', 'status']);
+
+            $tasks = Task::filter($filters)->get();
 
             if ($tasks->isEmpty()) {
                 return response()->json(['success' => false, 'message' => 'Data not found', 'data' => []], 404);
