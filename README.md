@@ -4,7 +4,7 @@ This project is divided into three main components, each focusing on a different
 
 ---
 
-## 🖥️ Backend API (PHP/Laravel) – 4 Hours
+## 🖥️ Backend API (PHP/Laravel)
 
 Develop a RESTful service that manages a collection of tasks. The service should support:
 
@@ -15,7 +15,7 @@ Develop a RESTful service that manages a collection of tasks. The service should
 
 ---
 
-## 🌐 Web Client (Next.js) – 6 Hours
+## 🌐 Web Client (Next.js)
 
 Build a web-based user interface using **Next.js** that communicates with the backend API. The application should:
 
@@ -26,7 +26,7 @@ Build a web-based user interface using **Next.js** that communicates with the ba
 
 ---
 
-## 📱 Mobile Application (Flutter) – 8 Hours
+## 📱 Mobile Application (Flutter)
 
 Create a mobile front-end using **Flutter**. The application should:
 
