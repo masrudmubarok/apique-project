@@ -51,7 +51,10 @@ class _TaskListScreenState extends State<TaskListScreen> {
       builder:
           (_) => AlertDialog(
             title: const Text('Edit Task'),
-            content: TextField(controller: controller),
+            content: TextField(
+              controller: controller,
+              decoration: const InputDecoration(hintText: 'Enter task title'),
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -106,13 +109,29 @@ class _TaskListScreenState extends State<TaskListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Task Management')),
+      appBar: AppBar(
+        title: const Text(
+          'My Tasks',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.deepPurple,
+      ),
       body:
           _isLoading
               ? const Center(child: CircularProgressIndicator())
+              : _tasks.isEmpty
+              ? const Center(
+                child: Text(
+                  'No tasks yet.\nTap + to add one!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+              )
               : RefreshIndicator(
                 onRefresh: _loadTasks,
-                child: ListView.builder(
+                child: ListView.separated(
+                  padding: const EdgeInsets.all(8),
                   itemCount: _tasks.length,
                   itemBuilder: (context, index) {
                     final task = _tasks[index];
@@ -123,9 +142,12 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       onDelete: () => _deleteTask(task),
                     );
                   },
+                  separatorBuilder: (_, __) => const SizedBox(height: 10),
                 ),
               ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.deepPurple,
+        foregroundColor: Colors.white,
         onPressed:
             () => showDialog(
               context: context,
