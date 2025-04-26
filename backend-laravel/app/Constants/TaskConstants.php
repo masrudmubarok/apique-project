@@ -18,8 +18,8 @@ class TaskConstants
     public static function getStatusLable()
     {
         return [
-            self::STATUS_DONE => __('done'),
-            self::STATUS_PENDING => __('pending'),
+            self::STATUS_DONE => 'done',
+            self::STATUS_PENDING => 'pending',
         ];
     }
 }

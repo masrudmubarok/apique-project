@@ -14,7 +14,7 @@ Route::post('/tasks', [TaskController::class, 'createTask'])->name('tasks.create
 
 // Update task
 Route::put('/tasks/{task}', [TaskController::class, 'updateTask'])->name('tasks.updateTask');
-Route::patch('/tasks/{task}', [TaskController::class, 'updateTask'])->name('tasks.updateTask');
+Route::patch('/tasks/{task}/status', [TaskController::class, 'updateTaskStatus'])->name('tasks.updateTaskStatus');
 
 // Delete task
 Route::delete('/tasks/{task}', [TaskController::class, 'deleteTask'])->name('tasks.deleteTask');

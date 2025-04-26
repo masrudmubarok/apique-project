@@ -79,6 +79,30 @@ class TaskController extends Controller
         }
     }
 
+    public function updateTaskStatus(Request $request, $id): JsonResponse
+    {
+        try {
+            $task = Task::find($id);
+
+            if (!$task) {
+                return response()->json(['success' => false, 'message' => 'Data not found', 'data' => null], 404);
+            }
+
+            $status = $request->input('status');
+            
+            try {
+                $statusEnum = TaskStatus::fromString($status);
+                $task->update(['status' => $statusEnum->value]);
+            } catch (\InvalidArgumentException $e) {
+                return response()->json(['success' => false, 'message' => 'Invalid status value', 'data' => null], 400);
+            }
+
+            return response()->json(['success' => true, 'message' => 'Task status updated successfully', 'data' => new TaskResource($task)], 200);
+        } catch (Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to update task status: ' . $e->getMessage(), 'data' => null], 500);
+        }
+    }
+
     public function deleteTask($id): JsonResponse
     {
         try {

@@ -15,17 +15,14 @@ class Task extends Model
         'status',
     ];
 
-    
     public function scopeFilter(Builder $query, array $filters): Builder
     {
-        foreach ($filters as $filterName => $filterValue) {
-            if ($filterName === 'title') {
-                $query->where('title', 'like', '%' . $filterValue . '%');
-            }
+        if (isset($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
 
-            if ($filterName === 'status') {
-                $query->where('status', $filterValue);
-            }
+        if (isset($filters['created_at'])) {
+            $query->whereDate('created_at', $filters['created_at']);
         }
 
         return $query;

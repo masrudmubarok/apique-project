@@ -1,11 +1,23 @@
 import axios from 'axios';
+import { format } from 'date-fns';
 
 const API_BASE_URL = 'http://localhost:8000/api/tasks';
 
-export const getTasks = async () => {
+export const getTasks = async (date?: Date, status?: string) => {
+  const params = new URLSearchParams();
+
+  if (date) {
+    params.append('created_at', format(date, 'yyyy-MM-dd'));
+  }
+
+  if (status && status !== 'all') {
+    params.append('status', status);
+  }
+
+  const url = params.toString() ? `${API_BASE_URL}?${params}` : API_BASE_URL;
 
   try {
-    const response = await axios.get(API_BASE_URL);
+    const response = await axios.get(url);
     return response.data.data;
   } catch (err: any) {
     console.error('getTasks error', err.response?.data || err.message);
@@ -33,6 +45,16 @@ export const updateTask = async (id: number, title: string, status: string) => {
   }
 };
 
+export const updateTaskStatus = async (id: number, status: string) => {
+  try {
+    const response = await axios.patch(`${API_BASE_URL}/${id}/status`, { status });
+    return response.data.data;
+  } catch (err: any) {
+    console.error('updateTaskStatus error', err.response?.data || err.message);
+    throw new Error(err.response?.data?.message || 'Failed to update task status');
+  }
+};
+
 export const deleteTask = async (id: number) => {
   try {
     await axios.delete(`${API_BASE_URL}/${id}`);
@@ -47,5 +69,6 @@ export default {
   getTasks,
   createTask,
   updateTask,
+  updateTaskStatus,
   deleteTask,
 };
