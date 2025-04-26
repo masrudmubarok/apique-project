@@ -38,7 +38,7 @@ export default function TaskList() {
     (async () => {
       setLoading(true);
       try {
-        const fetched = await getTasks(selectedDate, filter);
+        const fetched = await getTasks(selectedDate);
         setTasks(fetched);
         setError(null);
       } catch (e: any) {
@@ -47,7 +47,7 @@ export default function TaskList() {
         setLoading(false);
       }
     })();
-  }, [selectedDate, filter, hasMounted]);
+  }, [selectedDate, hasMounted]);
 
   const toggle = async (id: number) => {
     const task = tasks.find((t) => t.id === id);
