@@ -1,4 +1,4 @@
-# Task Flow API Project
+# Task Management API
 
 ## Project Summary
 This project implements a RESTful API for managing tasks.
@@ -39,11 +39,16 @@ Adjust database configurations:
 - `DB_USERNAME`: Your DB username
 - `DB_PASSWORD`: Your DB password
 
-You may also configure:
-- `APP_URL`
-- `APP_DEBUG`
+### Create Database
+Before running migrations, make sure you have created a database named `apique-task` in your MySQL server.
+
+You can create it manually via your database management tool (e.g., phpMyAdmin, TablePlus) or by running the following SQL command:
+```sql
+CREATE DATABASE apique-task;
+```
 
 ### Run Database Migrations and Seeders
+After the database is ready, run the following command to migrate and seed the database:
 ```bash
 php artisan migrate:fresh --seed
 ```
@@ -68,12 +73,8 @@ Default URL: [http://localhost:8000](http://localhost:8000)
 Retrieves a list of tasks with optional filtering.
 
 #### Query Parameters (optional) :
-- `title` (string): Filter tasks by title (partial matching supported)
 - `status` (string): Filter by status (e.g., `Pending`, `Done`)
-- `sort_by` (string): Field to sort by (`id`, `title`, `status`, etc.)
-- `sort_order` (string): `asc` or `desc`, default `asc`
-- `page` (int): Page number (pagination)
-- `per_page` (int): Items per page (default: 15)
+- `created_at` (date): Filter by date
 
 #### Response:
 ```json
@@ -181,6 +182,39 @@ Update an existing task (PUT for full update, PATCH also supported).
 {
     "success": true,
     "message": "Task updated successfully",
+    "data": {
+        "id": 1,
+        "title": "New task name",
+        "status": "Done",
+        "created_at": "2024-07-24T10:00:00.000000Z",
+        "updated_at": "2024-07-24T14:15:00.000000Z"
+    }
+}
+```
+Invalid input returns `422`, missing task returns `404`.
+
+---
+
+### 📝 Update Task Status
+**PUT** `/api/tasks/{id}/status`
+
+Update an existing task status (PATCH task status).
+
+#### Path Parameter:
+- `id` (int): Task ID
+
+#### Request Body:
+```json
+{
+    "status": "Done"
+}
+```
+
+#### Response:
+```json
+{
+    "success": true,
+    "message": "Task status updated successfully",
     "data": {
         "id": 1,
         "title": "New task name",

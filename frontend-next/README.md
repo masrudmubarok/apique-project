@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Task Management Web App
 
-## Getting Started
+## Project Summary
+This project is a web-based task management application built using Next.js. It serves as the frontend for interacting with the Task API, allowing users to create, view, update, and delete tasks. The app provides a clean and responsive interface for managing daily activities efficiently.
 
-First, run the development server:
+### Key Features:
+- **Task Listing**: View all tasks in a user-friendly format, with support for filtering by status and date.
+- **Add & Edit Tasks**: Create new tasks and update existing ones with ease.
+- **Responsive UI**: Fully responsive design that works well on desktops, tablets, and mobile devices.
+- **API Integration**: Connects seamlessly with a Laravel-powered RESTful API backend.
+- **Live Updates**: Tasks update in real-time without needing to refresh the page.
 
+---
+
+## Setup
+
+### Requirements
+- Node.js v22.14.0
+- NPM v11.3.0
+- Next.js v15
+
+### Clone the Project
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/masrudmubarok/apique-project.git
+cd apique-project/frontend-next
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Install Node Modules
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Start the Development Server
+```bash
+npm run dev
+```
+Default URL: [http://localhost:3000](http://localhost:3000)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
