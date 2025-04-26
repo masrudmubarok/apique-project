@@ -3,11 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
-import { Button, IconButton, MenuItem, Select, SelectChangeEvent, FormControl, InputLabel } from "@mui/material";
-import { Pencil, Trash2 } from "lucide-react";
+import { Button, IconButton, MenuItem, Select, SelectChangeEvent, FormControl, InputLabel, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { getTasks, updateTask, updateTaskStatus, deleteTask } from "../utils/api";
+import { getTasks, createTask, updateTask, updateTaskStatus, deleteTask } from "../utils/api";
 
 type Task = {
   id: number;
@@ -17,6 +17,11 @@ type Task = {
 };
 
 export default function TaskList() {
+  const [open, setOpen] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => { setOpen(false); setNewTaskTitle(""); };
+
   const [hasMounted, setHasMounted] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -26,17 +31,15 @@ export default function TaskList() {
   const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
   const [editedTitle, setEditedTitle] = useState<string>("");
 
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
+  useEffect(() => { setHasMounted(true); }, []);
 
   useEffect(() => {
     if (!hasMounted) return;
     (async () => {
       setLoading(true);
       try {
-        const fetchedTasks = await getTasks(selectedDate, filter);
-        setTasks(fetchedTasks);
+        const fetched = await getTasks(selectedDate, filter);
+        setTasks(fetched);
         setError(null);
       } catch (e: any) {
         setError(e.message);
@@ -47,23 +50,23 @@ export default function TaskList() {
   }, [selectedDate, filter, hasMounted]);
 
   const toggle = async (id: number) => {
-      const task = tasks.find((t) => t.id === id);
-      if (!task) return;
-      const newStatus = task.status === "done" ? "pending" : "done";
-      try {
-        const updated = await updateTaskStatus(id, newStatus);
-        setTasks((ts) => ts.map((t) => (t.id === id ? updated : t)));
-      } catch (err) {
-        console.error("Error updating task status", error);
-      }
+    const task = tasks.find((t) => t.id === id);
+    if (!task) return;
+    const newStatus = task.status === "done" ? "pending" : "done";
+    try {
+      const updated = await updateTaskStatus(id, newStatus);
+      setTasks((ts) => ts.map((t) => (t.id === id ? updated : t)));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const remove = async (id: number) => {
     try {
       await deleteTask(id);
-      setTasks((t) => t.filter((task) => task.id !== id));
-    } catch (error) {
-      console.error("Error deleting task", error);
+      setTasks((ts) => ts.filter((t) => t.id !== id));
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -79,7 +82,18 @@ export default function TaskList() {
       setTasks((ts) => ts.map((t) => (t.id === task.id ? updated : t)));
       setEditingTaskId(null);
     } catch (err) {
-      console.error("Failed updating title:", err);
+      console.error("Failed updating task:", err);
+    }
+  };
+
+  const handleAddTask = async () => {
+    if (!newTaskTitle.trim()) return;
+    try {
+      const added = await createTask(newTaskTitle, "pending");
+      setTasks((ts) => [added, ...ts]);
+      handleClose();
+    } catch (err) {
+      console.error("Failed adding task:", err);
     }
   };
 
@@ -89,37 +103,31 @@ export default function TaskList() {
     a.getDate() === b.getDate();
 
   const filtered = tasks.filter((task) => {
-    const taskDate = new Date(task.created_at);
-    const dateMatch = isSameDate(taskDate, selectedDate);
+    const d = new Date(task.created_at);
+    const dateMatch = isSameDate(d, selectedDate);
     const statusMatch = filter === "all" || task.status === filter;
     return dateMatch && statusMatch;
   });
 
-  const taskStatusClass = (status: string) =>
-    status === "done" ? "line-through text-gray-400" : "text-gray-900";
+  const taskClass = (s: string) =>
+    s === "done" ? "line-through text-gray-400" : "text-gray-900";
 
   if (!hasMounted) return null;
 
   return (
-    <div className="p-4 md:p-8 bg-gradient-to-br from-blue-50 to-purple-100 min-h-screen overflow-visible">
-        <div className="flex justify-between items-center mb-6 w-full">
-          <FormControl variant="outlined" className="w-1/5">
-            <InputLabel>Status</InputLabel>
-            <Select
-              value={filter}
-              onChange={(e: SelectChangeEvent) =>
-                setFilter(e.target.value as any)
-              }
-              label="Status"
-              className="bg-white"
+    <div className="p-4 md:p-8 bg-gradient-to-br from-blue-50 to-purple-100 min-h-screen">
+      {/* filters & add button */}
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0 md:space-x-4">
+        <Button
+            onClick={handleOpen}
+            variant="contained"
+            className="bg-purple-600 text-white flex items-center space-x-2 h-12 p-2 w-full md:w-auto"
             >
-              <MenuItem value="all">All</MenuItem>
-              <MenuItem value="done">Done</MenuItem>
-              <MenuItem value="pending">Pending</MenuItem>
-            </Select>
-          </FormControl>
+            <Plus className="h-6 w-6" />
+            <span>Add</span>
+        </Button>
 
-          <div className="relative w-1/3 flex justify-end">
+        <div className="flex md:justify-end w-full flex-wrap gap-4 mt-6 md:mt-0">
             <Popover>
                 <PopoverTrigger asChild>
                 <Button variant="outlined" className="bg-white">
@@ -138,56 +146,71 @@ export default function TaskList() {
                 />
                 </PopoverContent>
             </Popover>
-          </div>
+
+          <FormControl variant="outlined" className="w-[9.7rem] md:w-1/5">
+            <InputLabel>Status</InputLabel>
+            <Select
+            value={filter}
+            onChange={(e: SelectChangeEvent) => setFilter(e.target.value as any)}
+            label="Status"
+            >
+            <MenuItem value="all">All</MenuItem>
+            <MenuItem value="done">Done</MenuItem>
+            <MenuItem value="pending">Pending</MenuItem>
+            </Select>
+          </FormControl>
         </div>
-  
-        {loading ? (
-          <div className="text-center text-gray-600">Loading…</div>
-        ) : error ? (
-          <div className="text-center text-red-500">{error}</div>
-        ) : filtered.length ? (
-          <ul className="space-y-3 w-full">
-            {filtered.map((task) => (
-              <li
-                key={task.id}
-                className="flex items-center justify-between bg-white p-4 rounded-lg shadow"
-              >
-                <div className="flex items-center space-x-2 w-full">
-                  <input
-                    type="checkbox"
-                    checked={task.status === "done"}
-                    onChange={() => toggle(task.id)}
-                    className="h-5 w-5 text-purple-600"
-                  />
-                  {editingTaskId === task.id ? (
-                    <input
-                      className="border px-2 py-1 flex-1"
-                      value={editedTitle}
-                      onChange={(e) => setEditedTitle(e.target.value)}
-                      onBlur={() => handleTitleSubmit(task)}
-                      onKeyDown={(e) =>
-                        e.key === "Enter" && handleTitleSubmit(task)
-                      }
-                      autoFocus
-                    />
-                  ) : (
-                    <span className={taskStatusClass(task.status)}>{task.title}</span>
-                  )}
-                </div>
-                <div className="flex items-center space-x-4">
-                  <IconButton size="small" onClick={() => handleEditClick(task)}>
-                    <Pencil className="h-4 w-4 text-blue-500" />
-                  </IconButton>
-                  <IconButton onClick={() => remove(task.id)}>
-                    <Trash2 className="h-4 w-4 text-red-500" />
-                  </IconButton>
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="text-center text-gray-600">No tasks to show.</div>
-        )}
       </div>
-    );
+
+      {/* create task modal */}
+      <Dialog open={open} onClose={handleClose} fullWidth>
+        <DialogTitle>Add New Task</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Task Title"
+            type="text"
+            fullWidth
+            value={newTaskTitle}
+            onChange={(e) => setNewTaskTitle(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleAddTask} variant="contained" className="bg-purple-600 text-white">
+            Create
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* task list */}
+      {loading ? (
+        <div className="text-center">Loading…</div>
+      ) : error ? (
+        <div className="text-center text-red-500">{error}</div>
+      ) : filtered.length ? (
+        <ul className="space-y-3">
+          {filtered.map((task) => (
+            <li key={task.id} className="flex items-center justify-between bg-white p-4 rounded-lg shadow">
+              <div className="flex items-center space-x-2 w-full">
+                <input type="checkbox" checked={task.status === "done"} onChange={() => toggle(task.id)} className="h-5 w-5 text-purple-600" />
+                {editingTaskId === task.id ? (
+                  <input className="border px-2 py-1 flex-1  text-black" value={editedTitle} onChange={(e) => setEditedTitle(e.target.value)} onBlur={() => handleTitleSubmit(task)} onKeyDown={(e) => e.key === "Enter" && handleTitleSubmit(task)} autoFocus />
+                ) : (
+                  <span className={taskClass(task.status)}>{task.title}</span>
+                )}
+              </div>
+              <div className="flex space-x-2">
+                <IconButton onClick={() => handleEditClick(task)}><Pencil className="text-blue-500 h-5 w-5" /></IconButton>
+                <IconButton onClick={() => remove(task.id)}><Trash2 className="text-red-500 h-5 w-5" /></IconButton>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="text-center text-gray-700">No tasks to show.</div>
+      )}
+    </div>
+  );
 }
