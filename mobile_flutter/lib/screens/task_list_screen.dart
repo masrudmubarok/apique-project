@@ -63,6 +63,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     await _apiService.updateTask(
                       task.id,
                       controller.text.trim(),
+                      task.status,
                     );
                     Navigator.pop(context);
                     _loadTasks();

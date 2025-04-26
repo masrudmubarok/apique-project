@@ -15,12 +15,12 @@ class ApiService {
     await _dio.post('/tasks', data: {'title': title, 'status': 'pending'});
   }
 
-  Future<void> updateTask(int id, String title) async {
-    await _dio.put('/tasks/$id', data: {'title': title});
+  Future<void> updateTask(int id, String title, String status) async {
+    await _dio.put('/tasks/$id', data: {'title': title, 'status': status});
   }
 
   Future<void> updateTaskStatus(int id, String status) async {
-    await _dio.patch('/tasks/$id', data: {'status': status});
+    await _dio.patch('/tasks/$id/status', data: {'status': status});
   }
 
   Future<void> deleteTask(int id) async {
