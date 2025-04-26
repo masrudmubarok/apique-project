@@ -11,16 +11,28 @@ class ApiService {
     return data.map((task) => Task.fromJson(task)).toList();
   }
 
-  Future<void> createTask(String title) async {
-    await _dio.post('/tasks', data: {'title': title, 'status': 'pending'});
+  Future<Task> createTask(String title) async {
+    final response = await _dio.post(
+      '/tasks',
+      data: {'title': title, 'status': 'pending'},
+    );
+    return Task.fromJson(response.data['data']);
   }
 
-  Future<void> updateTask(int id, String title, String status) async {
-    await _dio.put('/tasks/$id', data: {'title': title, 'status': status});
+  Future<Task> updateTask(int id, String title, String status) async {
+    final response = await _dio.put(
+      '/tasks/$id',
+      data: {'title': title, 'status': status},
+    );
+    return Task.fromJson(response.data['data']);
   }
 
-  Future<void> updateTaskStatus(int id, String status) async {
-    await _dio.patch('/tasks/$id/status', data: {'status': status});
+  Future<Task> updateTaskStatus(int id, String status) async {
+    final response = await _dio.patch(
+      '/tasks/$id/status',
+      data: {'status': status},
+    );
+    return Task.fromJson(response.data['data']);
   }
 
   Future<void> deleteTask(int id) async {
