@@ -226,17 +226,19 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     )
                     : RefreshIndicator(
                       onRefresh: _loadTasks,
-                      child: ListView.separated(
+                      child: ListView.builder(
                         padding: const EdgeInsets.all(8),
                         itemCount: _filteredTasks.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 6),
                         itemBuilder: (ctx, i) {
                           final t = _filteredTasks[i];
-                          return TaskItem(
-                            task: t,
-                            onToggle: (v) => _toggleTaskStatus(t, v),
-                            onEdit: () => _editTask(t),
-                            onDelete: () => _deleteTask(t),
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 6),
+                            child: TaskItem(
+                              task: t,
+                              onToggle: (v) => _toggleTaskStatus(t, v),
+                              onEdit: () => _editTask(t),
+                              onDelete: () => _deleteTask(t),
+                            ),
                           );
                         },
                       ),
