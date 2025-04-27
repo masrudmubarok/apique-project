@@ -6,7 +6,7 @@ import '../widgets/task_item.dart';
 import '../widgets/add_task_dialog.dart';
 
 class TaskListScreen extends StatefulWidget {
-  const TaskListScreen({Key? key}) : super(key: key);
+  const TaskListScreen({super.key});
 
   @override
   State<TaskListScreen> createState() => _TaskListScreenState();
