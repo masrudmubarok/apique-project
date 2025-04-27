@@ -47,16 +47,17 @@ class _TaskListScreenState extends State<TaskListScreen> {
     setState(() {
       _filteredTasks =
           _tasks.where((task) {
-            final created = task.createdAt.toLocal();
-            final sameDay =
-                created.year == _dateFilter.year &&
-                created.month == _dateFilter.month &&
-                created.day == _dateFilter.day;
-            final statusMatch =
-                _statusFilter == 'All' ||
-                task.status == _statusFilter.toLowerCase();
-            return sameDay && statusMatch;
-          }).toList();
+              final created = task.createdAt;
+              final sameDay =
+                  created.year == _dateFilter.year &&
+                  created.month == _dateFilter.month &&
+                  created.day == _dateFilter.day;
+              final statusMatch =
+                  _statusFilter == 'All' ||
+                  task.status == _statusFilter.toLowerCase();
+              return sameDay && statusMatch;
+            }).toList()
+            ..sort((a, b) => a.id.compareTo(b.id));
     });
   }
 
@@ -76,7 +77,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
   Future<void> _addTask(String title) async {
     try {
       final added = await _apiService.createTask(title);
-      _tasks.insert(0, added);
+      _tasks.add(added);
       _applyFilters();
     } catch (e) {
       _showError('Failed to add task');
